@@ -314,6 +314,13 @@ export class News extends Component {
     super();
     this.state = { articles: this.articles, loading: false };
   }
+  async componentDidMount() {
+    let url =
+      "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d";
+    let data = await fetch(url);
+    data = await data.json();
+    this.setState((this.articles = data));
+  }
   render() {
     return (
       <div className="container my-3 ">
