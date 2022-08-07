@@ -312,22 +312,26 @@ export class News extends Component {
 
   constructor() {
     super();
-    this.state = { articles: this.articles, loading: false, page: 1 };
+    this.state = {
+      articles: this.articles,
+      loading: false,
+      page: 1,
+      totalResults: 10,
+    };
   }
   async componentDidMount() {
-    let url =
-      "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d";
+    let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d&page=0&pageSize=${this.props.pageSize}`;
     let data = await fetch(url);
     data = await data.json();
     this.setState({ articles: data.articles, totalResults: data.totalResults });
   }
   handleNextClick = async () => {
-    if (this.state.page + 1 > Math.ceil(this.state.totalResults / 20)) {
+    if (this.state.page + 1 > Math.ceil(this.state.totalResults / 21)) {
       console.log("finished");
     } else {
       let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d&page=${
         this.state.page + 1
-      }&pageSize=20`;
+      }&pageSize=${this.props.pageSize}`;
       let data = await fetch(url);
       data = await data.json();
       this.setState({ articles: data.articles, page: this.state.page + 1 });
@@ -336,7 +340,7 @@ export class News extends Component {
   handlePrevClick = async () => {
     let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d&page=${
       this.state.page - 1
-    }&pageSize=20`;
+    }&pageSize=${this.props.pageSize}`;
     let data = await fetch(url);
     data = await data.json();
     this.setState({ articles: data.articles, page: this.state.page - 1 });
@@ -381,6 +385,9 @@ export class News extends Component {
             type="button"
             className="btn btn-outline-dark"
             onClick={this.handleNextClick}
+            disabled={
+              this.state.page + 1 > Math.ceil(this.state.totalResults / 21)
+            }
           >
             Next &rarr;
           </button>
