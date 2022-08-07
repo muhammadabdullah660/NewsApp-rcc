@@ -312,41 +312,76 @@ export class News extends Component {
 
   constructor() {
     super();
-    this.state = { articles: this.articles, loading: false };
+    this.state = { articles: this.articles, loading: false, page: 1 };
   }
   async componentDidMount() {
     let url =
       "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d";
     let data = await fetch(url);
     data = await data.json();
-    this.setState((this.articles = data));
+    this.setState({ articles: data.articles });
   }
+  handleNextClick = async () => {
+    let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d&page=${
+      this.state.page + 1
+    }`;
+    let data = await fetch(url);
+    data = await data.json();
+    this.setState({ articles: data.articles, page: this.state.page + 1 });
+  };
+  handlePrevClick = async () => {
+    let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d&page=${
+      this.state.page - 1
+    }`;
+    let data = await fetch(url);
+    data = await data.json();
+    this.setState({ articles: data.articles, page: this.state.page - 1 });
+  };
   render() {
     return (
-      <div className="container my-3 ">
-        <h2>Top HeadLines</h2>
-        <div className="row">
-          {this.state.articles.map((element) => {
-            return (
-              <div
-                className="col-lg-4 col-md-4 col-sm-6 col-xs-12"
-                key={element.url}
-              >
-                <NewsItem
-                  title={element.title.slice(0, 50)}
-                  description={
-                    element.description !== null
-                      ? element.description.slice(0, 80) + "..."
-                      : "..."
-                  }
-                  imageUrl={element.urlToImage}
-                  newsUrl={element.url}
-                />
-              </div>
-            );
-          })}
+      <>
+        <div className="container my-3 ">
+          <h2>Top HeadLines</h2>
+          <div className="row">
+            {this.state.articles.map((element) => {
+              return (
+                <div
+                  className="col-lg-4 col-md-4 col-sm-6 col-xs-12"
+                  key={element.url}
+                >
+                  <NewsItem
+                    title={element.title.slice(0, 50)}
+                    description={
+                      element.description !== null
+                        ? element.description.slice(0, 80) + "..."
+                        : "..."
+                    }
+                    imageUrl={element.urlToImage}
+                    newsUrl={element.url}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+        <div className="container d-flex justify-content-between">
+          <button
+            type="button"
+            class="btn btn-outline-dark"
+            onClick={this.handlePrevClick}
+            disabled={this.state.page <= 1}
+          >
+            &larr; Previous
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-dark"
+            onClick={this.handleNextClick}
+          >
+            Next &rarr;
+          </button>
+        </div>
+      </>
     );
   }
 }
