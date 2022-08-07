@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import NewsItem from "../NewsItem/NewsItem";
+import Spinner from "../Spinner/Spinner";
 
 export class News extends Component {
   articles = [
@@ -321,55 +322,69 @@ export class News extends Component {
   }
   async componentDidMount() {
     let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d&page=0&pageSize=${this.props.pageSize}`;
+    this.setState({ loading: true });
     let data = await fetch(url);
     data = await data.json();
-    this.setState({ articles: data.articles, totalResults: data.totalResults });
+    this.setState({
+      articles: data.articles,
+      totalResults: data.totalResults,
+      loading: false,
+    });
   }
+  handleClick = () => {};
   handleNextClick = async () => {
-    if (this.state.page + 1 > Math.ceil(this.state.totalResults / 21)) {
-      console.log("finished");
-    } else {
-      let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d&page=${
-        this.state.page + 1
-      }&pageSize=${this.props.pageSize}`;
-      let data = await fetch(url);
-      data = await data.json();
-      this.setState({ articles: data.articles, page: this.state.page + 1 });
-    }
+    let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d&page=${
+      this.state.page + 1
+    }&pageSize=${this.props.pageSize}`;
+    this.setState({ loading: true });
+    let data = await fetch(url);
+    data = await data.json();
+    this.setState({
+      articles: data.articles,
+      page: this.state.page + 1,
+      loading: false,
+    });
   };
   handlePrevClick = async () => {
     let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d&page=${
       this.state.page - 1
     }&pageSize=${this.props.pageSize}`;
+    this.setState({ loading: true });
     let data = await fetch(url);
     data = await data.json();
-    this.setState({ articles: data.articles, page: this.state.page - 1 });
+    this.setState({
+      articles: data.articles,
+      page: this.state.page - 1,
+      loading: false,
+    });
   };
   render() {
     return (
       <>
-        <div className="container my-3 ">
+        <div className="container my-3 text-center">
           <h2>Top HeadLines</h2>
+          {this.state.loading && <Spinner />}
           <div className="row">
-            {this.state.articles.map((element) => {
-              return (
-                <div
-                  className="col-lg-4 col-md-4 col-sm-6 col-xs-12"
-                  key={element.url}
-                >
-                  <NewsItem
-                    title={element.title.slice(0, 50)}
-                    description={
-                      element.description !== null
-                        ? element.description.slice(0, 80) + "..."
-                        : "..."
-                    }
-                    imageUrl={element.urlToImage}
-                    newsUrl={element.url}
-                  />
-                </div>
-              );
-            })}
+            {!this.state.loading &&
+              this.state.articles.map((element) => {
+                return (
+                  <div
+                    className="col-lg-4 col-md-4 col-sm-6 col-xs-12"
+                    key={element.url}
+                  >
+                    <NewsItem
+                      title={element.title.slice(0, 50)}
+                      description={
+                        element.description !== null
+                          ? element.description.slice(0, 80) + "..."
+                          : "..."
+                      }
+                      imageUrl={element.urlToImage}
+                      newsUrl={element.url}
+                    />
+                  </div>
+                );
+              })}
           </div>
         </div>
         <div className="container d-flex justify-content-between">
