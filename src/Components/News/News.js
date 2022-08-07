@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import NewsItem from "../NewsItem/NewsItem";
 import Spinner from "../Spinner/Spinner";
-
+import PropTypes from "prop-types";
 export class News extends Component {
   articles = [
     {
@@ -310,7 +310,16 @@ export class News extends Component {
         "Hello again! Welcome back to Week in Review, the newsletter where we quickly recap the top stories to cross TechCrunch dot-com over the past seven days. Want it in your inbox? Get it here.\r\nThe most … [+2689 chars]",
     },
   ];
-
+  static defaultProps = {
+    country: "us",
+    pageSize: 5,
+    category: "general",
+  };
+  static propTypes = {
+    country: PropTypes.string,
+    category: PropTypes.string,
+    pageSize: PropTypes.number,
+  };
   constructor() {
     super();
     this.state = {
@@ -321,7 +330,7 @@ export class News extends Component {
     };
   }
   async componentDidMount() {
-    let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d&page=0&pageSize=${this.props.pageSize}`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=e777f111838f406f850b6564e93f361d&page=0&pageSize=${this.props.pageSize}`;
     this.setState({ loading: true });
     let data = await fetch(url);
     data = await data.json();
@@ -331,9 +340,12 @@ export class News extends Component {
       loading: false,
     });
   }
-  handleClick = () => {};
   handleNextClick = async () => {
-    let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d&page=${
+    let url = `https://newsapi.org/v2/top-headlines?country=${
+      this.props.country
+    }&category=${
+      this.props.category
+    }&apiKey=e777f111838f406f850b6564e93f361d&page=${
       this.state.page + 1
     }&pageSize=${this.props.pageSize}`;
     this.setState({ loading: true });
@@ -346,7 +358,11 @@ export class News extends Component {
     });
   };
   handlePrevClick = async () => {
-    let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=e777f111838f406f850b6564e93f361d&page=${
+    let url = `https://newsapi.org/v2/top-headlines?country=${
+      this.props.country
+    }&category=${
+      this.props.category
+    }&apiKey=e777f111838f406f850b6564e93f361d&page=${
       this.state.page - 1
     }&pageSize=${this.props.pageSize}`;
     this.setState({ loading: true });
