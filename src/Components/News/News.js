@@ -320,14 +320,20 @@ export class News extends Component {
     category: PropTypes.string,
     pageSize: PropTypes.number,
   };
-  constructor() {
-    super();
+  capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+  constructor(props) {
+    super(props);
     this.state = {
       articles: this.articles,
       loading: false,
       page: 1,
       totalResults: 10,
     };
+    document.title = `NewsApp - ${this.capitalizeFirstLetter(
+      this.props.category
+    )}`;
   }
   async componentDidMount() {
     this.dataFetch();
@@ -359,7 +365,11 @@ export class News extends Component {
     return (
       <>
         <div className="container my-3 text-center">
-          <h2>Top HeadLines</h2>
+          <h2>
+            {`Top Headlines - ${this.capitalizeFirstLetter(
+              this.props.category
+            )}`}
+          </h2>
           {this.state.loading && <Spinner />}
           <div className="row">
             {!this.state.loading &&
