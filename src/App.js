@@ -1,7 +1,8 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import Navbar from "./Components/Navbar/Navbar";
 import News from "./Components/News/News";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoadingBar from "react-top-loading-bar";
 export default class App extends Component {
   pageSize = 3;
   country = "us";
