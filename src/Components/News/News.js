@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import NewsItem from "../NewsItem/NewsItem";
 import Spinner from "../Spinner/Spinner";
 import PropTypes from "prop-types";
+import InfiniteScroll from "react-infinite-scroll-component";
 export class News extends Component {
   articles = [
     {
@@ -329,7 +330,7 @@ export class News extends Component {
       articles: this.articles,
       loading: false,
       page: 1,
-      totalResults: 10,
+      totalResults: 0,
     };
     document.title = `NewsApp - ${this.capitalizeFirstLetter(
       this.props.category
@@ -339,7 +340,7 @@ export class News extends Component {
     this.dataFetch();
   }
   async dataFetch() {
-    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=e777f111838f406f850b6564e93f361d&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=4ac1bd332dba43dca993ebbbc25a8d70&page=${this.state.page}&pageSize=${this.props.pageSize}`;
     this.setState({ loading: true });
     let data = await fetch(url);
     data = await data.json();
@@ -349,18 +350,21 @@ export class News extends Component {
       loading: false,
     });
   }
-  handleNextClick = async () => {
+  fetchMoreData = async () => {
     this.setState({
       page: this.state.page + 1,
     });
-    this.dataFetch();
-  };
-  handlePrevClick = async () => {
+    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=4ac1bd332dba43dca993ebbbc25a8d70&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    this.setState({ loading: true });
+    let data = await fetch(url);
+    data = await data.json();
     this.setState({
-      page: this.state.page - 1,
+      articles: this.state.articles.concat(data.articles),
+      totalResults: data.totalResults,
+      loading: false,
     });
-    this.dataFetch();
   };
+
   render() {
     return (
       <>
@@ -370,10 +374,18 @@ export class News extends Component {
               this.props.category
             )}`}
           </h2>
-          {this.state.loading && <Spinner />}
-          <div className="row">
-            {!this.state.loading &&
-              this.state.articles.map((element) => {
+          <InfiniteScroll
+            dataLength={this.state.articles.length}
+            next={this.fetchMoreData}
+            hasMore={this.state.articles.length !== this.state.totalResults}
+            loader={
+              <h4>
+                <Spinner />
+              </h4>
+            }
+          >
+            <div className="row">
+              {this.state.articles.map((element) => {
                 return (
                   <div
                     className="col-lg-4 col-md-4 col-sm-6 col-xs-12"
@@ -397,27 +409,8 @@ export class News extends Component {
                   </div>
                 );
               })}
-          </div>
-        </div>
-        <div className="container d-flex justify-content-between">
-          <button
-            type="button"
-            className="btn btn-outline-dark"
-            onClick={this.handlePrevClick}
-            disabled={this.state.page <= 1}
-          >
-            &larr; Previous
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline-dark"
-            onClick={this.handleNextClick}
-            disabled={
-              this.state.page + 1 > Math.ceil(this.state.totalResults / 21)
-            }
-          >
-            Next &rarr;
-          </button>
+            </div>
+          </InfiniteScroll>
         </div>
       </>
     );

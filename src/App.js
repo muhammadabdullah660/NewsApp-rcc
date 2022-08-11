@@ -3,7 +3,7 @@ import Navbar from "./Components/Navbar/Navbar";
 import News from "./Components/News/News";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 export default class App extends Component {
-  pageSize = 12;
+  pageSize = 3;
   country = "us";
   render() {
     return (
